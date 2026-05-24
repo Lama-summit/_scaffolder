@@ -110,4 +110,5 @@ La calidad de copy, arquitectura profunda, marca, diseño visual y dominio espec
 - 2026-05-24: Añadido `npm test` con runner sin dependencias para validar generación de los tres stacks MVP.
 - 2026-05-24: Añadida skill local `visual-asset-director` y prompt `opencode-visual-polish`; los proyectos frontend generados los reciben automáticamente.
 - 2026-05-24: Añadida retrospectiva de `cafeteria-visual-demo` en `docs/field-notes.md`.
+- 2026-05-24: Añadida nota de campo sobre prueba `imagegen` en `cafeteria-visual-demo`: asset hero generado, optimizado, integrado, validado y documentado como provisional.
 - 2026-05-24: Endurecidas `visual-asset-director` y `opencode-visual-polish` con requisitos anti-slop: señales de dominio, decisiones tipográficas, botones deliberados, copy concreto y restricciones negativas en `BRAND.md`.

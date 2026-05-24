@@ -16,10 +16,11 @@ Para librerías, componentes y referencias UX/UI, lee también `docs/ux-ui-resou
 
 1. Normalizar en `BRAND.md` qué tipo de recursos necesita el proyecto: fotografía real, imagen generada, mockups, iconografía, capturas, logos o ilustración.
 2. Si el recurso debe ser bitmap, usar `imagegen` y guardar el resultado dentro del repo.
-3. Si el recurso es icono, logo vectorial simple o UI code-native, preferir SVG/CSS/código antes que imagen generada.
-4. Optimizar nombres, dimensiones y formatos antes de referenciar el asset.
-5. Abrir la web con Browser y revisar desktop/móvil.
-6. Registrar deuda visual o assets provisionales en `KNOWN_GAPS.md`.
+3. Convertir/optimizar formato y peso antes de referenciarlo desde HTML/CSS.
+4. Si el recurso es icono, logo vectorial simple o UI code-native, preferir SVG/CSS/código antes que imagen generada.
+5. Optimizar nombres, dimensiones y formatos antes de referenciar el asset.
+6. Abrir la web con Browser y revisar desktop/móvil.
+7. Registrar deuda visual o assets provisionales en `KNOWN_GAPS.md`.
 
 ## Contrato Futuro
 
@@ -42,3 +43,5 @@ Una fase posterior puede añadir:
 - Las escenas CSS tienen semántica accesible: `role="img"` si comunican contenido, `aria-hidden="true"` si son decorativas.
 - Las fuentes declaradas están cargadas o se documenta explícitamente que se usa system UI.
 - El copy visible respeta el idioma del proyecto, incluyendo tildes y formato local.
+- Los assets generados están guardados dentro del repo y no apuntan a rutas temporales.
+- `KNOWN_GAPS.md` identifica si una imagen generada debe sustituirse por fotografía real.

@@ -37,3 +37,31 @@ Probar si `skills/visual-asset-director.md` y `prompts/opencode-visual-polish.md
 - Añadir checklist de copy localizado para proyectos en español.
 - Añadir una regla de accesibilidad para `aria-label` en elementos visuales no semánticos.
 - Explorar una prueba con `imagegen` para validar hero images y flujo de assets reales.
+
+## 2026-05-24 — `cafeteria-visual-demo` con `imagegen`
+
+### Objetivo
+
+Probar el pipeline de recursos gráficos con un asset raster generado para sustituir una escena CSS provisional en el hero.
+
+### Qué Funcionó
+
+- `imagegen` produjo un hero horizontal coherente con el dominio: barra de cafetería, café, bollería, luz natural y señales de barrio.
+- El asset se guardó dentro del repo en `img/hero-cafe-miga-clara.jpg`; no quedó referenciado desde la carpeta temporal de generación.
+- Convertir PNG a JPEG redujo el peso de 2.0 MB a 340 KB manteniendo tamaño suficiente para hero (`1691x930`).
+- Sustituir la escena CSS por una imagen realista hizo que el primer viewport comunicara mejor lugar, producto y atmósfera.
+- Browser confirmó que la imagen carga, no hay overflow horizontal y funciona en desktop/móvil.
+
+### Qué Hay Que Cuidar
+
+- Un asset generado debe documentarse como provisional si no representa un local real.
+- Si el negocio existe, la fotografía real debe tener prioridad sobre una imagen generada.
+- No conviene generar una colección completa de imágenes hasta fijar dirección fotográfica en `BRAND.md`.
+- El alt text debe describir el contenido útil, no repetir el nombre del archivo.
+
+### Reglas Incorporadas
+
+- Todo asset generado para un proyecto debe copiarse al repo antes de referenciarse.
+- Optimizar formato/peso forma parte del pipeline, no es un paso opcional.
+- `KNOWN_GAPS.md` debe indicar si el asset generado debe sustituirse por fotografía real.
+- El QA visual de assets debe comprobar carga, dimensiones, overflow y responsive.
