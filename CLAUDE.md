@@ -1,0 +1,81 @@
+# _scaffolder — Estado Operativo
+
+> Memoria viva del scaffolder. Actualiza este archivo cuando cambien scripts, plantillas, validadores, contrato de salida o decisiones relevantes.
+
+## Estado Actual
+
+El scaffolder está en transición desde un sistema puramente documental hacia una lanzadera híbrida:
+
+- Documentación corta para orientar a Codex y otros agentes.
+- Scripts Node.js ESM para tareas mecánicas.
+- Plantillas base para tres stacks MVP.
+- Validador de higiene del repo generado.
+
+Fase 1 implementada:
+
+- `scripts/new-project.mjs` crea proyectos base, copia plantilla, genera ntfy, escribe docs obligatorios, inicializa git y ejecuta validación.
+- `scripts/validate-project.mjs` valida estructura, stack, ntfy y placeholders prohibidos.
+- Las tres plantillas MVP generan demos válidas en `/tmp`.
+- Este repo fue inicializado como git para poder versionar el scaffolder.
+
+## Decisiones Cerradas
+
+- Modelo operativo: híbrido.
+- Lenguaje de scripts: Node.js ESM (`.mjs`) con módulos nativos.
+- Stacks MVP:
+  - `vanilla-static`
+  - `next-supabase`
+  - `fastapi-supabase`
+- `new-project.mjs` crea un repo base completo y validado.
+- Codex sigue siendo responsable de normalizar briefs, arquitectura específica, contenido, diseño, agentes y skills finales.
+- Git del proyecto generado usa un único commit inicial: `feat: initial scaffold`.
+- La validación MVP es estricta en estructura/placeholders y flexible en calidad subjetiva.
+
+## Estructura Relevante
+
+```txt
+AGENTS.md
+AI_WORKFLOW_SYSTEM.md
+CLAUDE.md
+docs/
+  scaffolding-process.md
+  generated-project-contract.md
+  opencode-routing.md
+prompts/
+  opencode-scaffolder-mvp.md
+scripts/
+  new-project.mjs
+  validate-project.mjs
+templates/
+  vanilla-static/
+  next-supabase/
+  fastapi-supabase/
+```
+
+## Comandos
+
+```bash
+node scripts/new-project.mjs --name demo --stack vanilla-static
+node scripts/new-project.mjs --name demo-app --stack next-supabase --brief path/to/brief.md
+node scripts/validate-project.mjs /Users/lama/Desktop/proyectos_web/demo
+```
+
+## Validación
+
+El validador debe fallar si faltan archivos obligatorios, `prompts/`, `.gitignore`, variables ntfy o si quedan placeholders prohibidos.
+
+La calidad de copy, arquitectura profunda, marca, diseño visual y dominio específico se revisan con Codex después de la generación base.
+
+## Deuda Técnica
+
+- Añadir tests automatizados para scripts.
+- Añadir fixtures de proyectos esperados.
+- Añadir soporte opcional para brief Meteor/JSON.
+- Añadir validación más profunda por stack cuando el MVP esté estable.
+- Hacer commit inicial del scaffolder cuando se decida el alcance exacto a versionar.
+- Añadir `.gitignore` más específico si aparecen artefactos nuevos.
+
+## Log
+
+- 2026-05-24: Se acuerda reestructuración híbrida MVP: docs especializadas, scripts Node.js, tres plantillas base y validador estricto de higiene.
+- 2026-05-24: Implementada fase 1 con docs reestructuradas, scripts MVP, plantillas `vanilla-static`, `next-supabase`, `fastapi-supabase`, validación demo y git inicializado.
