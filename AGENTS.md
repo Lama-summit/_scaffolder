@@ -38,6 +38,7 @@ El proyecto generado debe quedar listo para abrir en Codex Desktop, OpenCode, Cl
 ```bash
 node scripts/new-project.mjs --name demo --stack vanilla-static
 node scripts/new-project.mjs --name demo --stack vanilla-static --type "landing de cafeteria local" --goal "atraer visitas y contacto"
+node scripts/new-project.mjs --name demo --stack vanilla-static --type "landing de cafeteria local" --goal "atraer visitas" --audience "vecinos del barrio" --tone "cercano y calido" --quality polished --brief-inline "Cafeteria local con desayunos y pedidos para llevar."
 node scripts/new-project.mjs --name demo-app --stack next-supabase --brief path/to/brief.md
 node scripts/validate-project.mjs /Users/lama/Desktop/proyectos_web/demo
 npm test

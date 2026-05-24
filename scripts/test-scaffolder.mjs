@@ -15,18 +15,28 @@ const CASES = [
     stack: "vanilla-static",
     type: "landing estatica de prueba",
     goal: "validar generacion vanilla",
+    audience: "usuarios de prueba del scaffolder",
+    tone: "claro y operativo",
+    quality: "polished",
+    briefInline: "Demo vanilla para validar contexto inline y calidad polished.",
   },
   {
     name: "scaffolder-test-next",
     stack: "next-supabase",
     type: "app fullstack de prueba",
     goal: "validar generacion next",
+    audience: "equipo interno tecnico",
+    tone: "profesional y directo",
+    quality: "premium",
   },
   {
     name: "scaffolder-test-api",
     stack: "fastapi-supabase",
     type: "api interna de prueba",
     goal: "validar generacion fastapi",
+    audience: "desarrolladores backend",
+    tone: "tecnico y sobrio",
+    quality: "base",
   },
 ];
 
@@ -84,9 +94,40 @@ function main() {
       testCase.type,
       "--goal",
       testCase.goal,
+      "--audience",
+      testCase.audience,
+      "--tone",
+      testCase.tone,
+      "--quality",
+      testCase.quality,
       "--target-dir",
       TARGET_DIR,
     ]);
+
+    if (testCase.briefInline) {
+      cleanProject(testCase.name);
+      run("node", [
+        "scripts/new-project.mjs",
+        "--name",
+        testCase.name,
+        "--stack",
+        testCase.stack,
+        "--type",
+        testCase.type,
+        "--goal",
+        testCase.goal,
+        "--audience",
+        testCase.audience,
+        "--tone",
+        testCase.tone,
+        "--quality",
+        testCase.quality,
+        "--brief-inline",
+        testCase.briefInline,
+        "--target-dir",
+        TARGET_DIR,
+      ]);
+    }
 
     console.log(`Validating ${target}`);
     run("node", ["scripts/validate-project.mjs", target]);

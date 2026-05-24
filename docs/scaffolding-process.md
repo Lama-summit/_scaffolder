@@ -75,9 +75,16 @@ Opcional:
 ```bash
 node scripts/new-project.mjs --name <nombre> --stack <stack> --brief path/to/brief.md
 node scripts/new-project.mjs --name <nombre> --stack <stack> --type "landing de cafeteria local" --goal "atraer visitas y contacto"
+node scripts/new-project.mjs --name <nombre> --stack <stack> --type "landing de cafeteria local" --goal "atraer visitas" --audience "vecinos del barrio" --tone "cercano y calido" --quality polished --brief-inline "Cafeteria local con desayunos y pedidos para llevar."
 ```
 
-El script crea la base mecánica. `--type` y `--goal` sirven para dejar contexto mínimo en los documentos sin convertir el script en un generador inteligente. Codex adapta después contenido específico, arquitectura, marca, agentes y skills.
+El script crea la base mecánica. `--type`, `--goal`, `--audience`, `--tone`, `--quality` y `--brief-inline` sirven para dejar contexto mínimo en los documentos sin convertir el script en un generador inteligente. Codex adapta después contenido específico, arquitectura, marca, agentes y skills.
+
+Calidades válidas:
+
+- `base`: estructura funcional y documentación completa.
+- `polished`: acabado visual/copy más cuidado desde el primer handoff.
+- `premium`: preparar el repo para dirección visual diferenciada, QA más estricta y posible motion/assets premium si el brief lo justifica.
 
 ## 6. Adaptación por Codex
 

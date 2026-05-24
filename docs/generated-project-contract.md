@@ -81,6 +81,19 @@ feat: initial scaffold
 
 Si el commit falla por configuración local, la generación no debe destruir archivos. Debe mostrar un aviso claro.
 
+## Contexto Ligero
+
+`.scaffolder-context.json` debe reflejar los inputs ligeros cuando existan:
+
+- `type`
+- `goal`
+- `audience`
+- `tone`
+- `quality`
+- `ntfyTopic`
+
+`quality` solo puede ser `base`, `polished` o `premium`.
+
 ## Validación MVP
 
 La validación es estricta en higiene:

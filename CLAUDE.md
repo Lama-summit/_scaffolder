@@ -71,6 +71,7 @@ templates/
 ```bash
 node scripts/new-project.mjs --name demo --stack vanilla-static
 node scripts/new-project.mjs --name demo --stack vanilla-static --type "landing de cafeteria local" --goal "atraer visitas y contacto"
+node scripts/new-project.mjs --name demo --stack vanilla-static --type "landing de cafeteria local" --goal "atraer visitas" --audience "vecinos del barrio" --tone "cercano y calido" --quality polished --brief-inline "Cafeteria local con desayunos y pedidos para llevar."
 node scripts/new-project.mjs --name demo-app --stack next-supabase --brief path/to/brief.md
 node scripts/validate-project.mjs /Users/lama/Desktop/proyectos_web/demo
 npm test
@@ -85,6 +86,8 @@ El validador escribe un reporte persistente en `reports/scaffold-validation.json
 `npm test` genera y valida los tres stacks MVP en `/tmp`, revalida cada repo y comprueba que el working tree queda limpio.
 
 En stacks frontend, `validate-project.mjs` también valida assets locales, imágenes mayores de 500 KB y fuentes declaradas sin carga explícita. El reporte incluye `assetStats`.
+
+`new-project.mjs` acepta contexto ligero con `--audience`, `--tone`, `--quality base|polished|premium` y `--brief-inline`; estos valores se propagan a `.scaffolder-context.json` y a los documentos generados.
 
 La calidad de copy, arquitectura profunda, marca, diseño visual y dominio específico se revisan con Codex después de la generación base.
 
@@ -103,6 +106,7 @@ La calidad de copy, arquitectura profunda, marca, diseño visual y dominio espec
 - Evaluar instalación de la skill Transitions.dev si los proyectos empiezan a necesitar motion CSS de forma recurrente.
 - Convertir aprendizajes de `docs/field-notes.md` en validadores cuando se repitan en varios proyectos.
 - Afinar umbrales de assets cuando haya proyectos reales con fotografías más grandes o requisitos responsive complejos.
+- Añadir extracción estructurada desde briefs más ricos si `--brief-inline` se queda corto.
 
 ## Log
 
@@ -115,4 +119,5 @@ La calidad de copy, arquitectura profunda, marca, diseño visual y dominio espec
 - 2026-05-24: Añadida retrospectiva de `cafeteria-visual-demo` en `docs/field-notes.md`.
 - 2026-05-24: Añadida nota de campo sobre prueba `imagegen` en `cafeteria-visual-demo`: asset hero generado, optimizado, integrado, validado y documentado como provisional.
 - 2026-05-24: Añadidos validadores automáticos de assets frontend: referencias locales, imágenes >500 KB y fuentes declaradas sin carga.
+- 2026-05-24: Añadidos inputs ligeros al generador: `--audience`, `--tone`, `--quality` y `--brief-inline`.
 - 2026-05-24: Endurecidas `visual-asset-director` y `opencode-visual-polish` con requisitos anti-slop: señales de dominio, decisiones tipográficas, botones deliberados, copy concreto y restricciones negativas en `BRAND.md`.

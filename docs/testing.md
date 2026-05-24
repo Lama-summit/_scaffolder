@@ -15,6 +15,7 @@ npm test
   - `vanilla-static`
   - `next-supabase`
   - `fastapi-supabase`
+- Cobertura de contexto ligero: `--audience`, `--tone`, `--quality` y `--brief-inline`.
 - Validación de cada proyecto generado.
 - Revalidación idempotente.
 - Working tree limpio dentro de cada repo generado después de revalidar.

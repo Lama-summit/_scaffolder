@@ -18,6 +18,7 @@ const __dirname = path.dirname(__filename);
 const SCAFFOLDER_ROOT = path.resolve(__dirname, "..");
 const DEFAULT_TARGET_DIR = "/Users/lama/Desktop/proyectos_web";
 const VALID_STACKS = new Set(["vanilla-static", "next-supabase", "fastapi-supabase"]);
+const VALID_QUALITIES = new Set(["base", "polished", "premium"]);
 
 const STACK_META = {
   "vanilla-static": {
@@ -48,7 +49,7 @@ const STACK_META = {
 
 function usage() {
   console.error(`Usage:
-  node scripts/new-project.mjs --name <name> --stack <stack> [--type "project type"] [--goal "main goal"] [--brief path/to/brief.md] [--target-dir /path]
+  node scripts/new-project.mjs --name <name> --stack <stack> [--type "project type"] [--goal "main goal"] [--audience "target audience"] [--tone "voice/tone"] [--quality base|polished|premium] [--brief path/to/brief.md] [--brief-inline "short brief"] [--target-dir /path]
 
 Stacks:
   ${[...VALID_STACKS].join(", ")}`);
@@ -121,6 +122,13 @@ function copyBrief(source, destination) {
   return path.basename(resolved);
 }
 
+function writeInlineBrief(content, destination) {
+  const cleaned = cleanInput(content);
+  if (!cleaned) return null;
+  writeText(destination, `# Brief inline\n\n${cleaned}\n`);
+  return "brief-inline";
+}
+
 function git(projectRoot, args) {
   return spawnSync("git", args, {
     cwd: projectRoot,
@@ -165,13 +173,45 @@ function renderBuildSection(meta) {
   return `\`\`\`bash\n${meta.buildCommand}\n\`\`\``;
 }
 
-function docs({ name, slug, stack, topic, briefFile, projectType, projectGoal }) {
+function normalizeQuality(value) {
+  const cleaned = cleanInput(value) || "base";
+  if (!VALID_QUALITIES.has(cleaned)) {
+    throw new Error(`Invalid --quality "${cleaned}". Expected one of: ${[...VALID_QUALITIES].join(", ")}`);
+  }
+  return cleaned;
+}
+
+function qualityGuidance(quality) {
+  if (quality === "premium") {
+    return "Premium: dirección visual diferenciada, copy específico, QA visual estricta, posible uso justificado de motion/assets premium.";
+  }
+  if (quality === "polished") {
+    return "Polished: acabado visual cuidado, copy específico, responsive revisado y assets/estados básicos bien resueltos.";
+  }
+  return "Base: estructura funcional, documentación completa y decisiones visuales iniciales sin sobreinvertir en acabado.";
+}
+
+function docs({
+  name,
+  slug,
+  stack,
+  topic,
+  briefFile,
+  projectType,
+  projectGoal,
+  projectAudience,
+  projectTone,
+  projectQuality,
+}) {
   const meta = STACK_META[stack];
   const date = new Date().toISOString().slice(0, 10);
   const subscribeUrl = `https://ntfy.sh/${topic}`;
   const promptList = listPromptFiles();
   const typeLine = projectType || "Pendiente de definir por Codex tras leer la idea o brief.";
   const goalLine = projectGoal || "Pendiente de definir por Codex tras leer la idea o brief.";
+  const audienceLine = projectAudience || "Pendiente de definir por Codex tras leer la idea o brief.";
+  const toneLine = projectTone || "Pendiente de definir por Codex tras leer la idea o brief.";
+  const qualityLine = projectQuality || "base";
   const contextSummary = projectType
     ? `${name} es ${projectType}${projectGoal ? ` cuyo objetivo principal es ${projectGoal}` : ""}.`
     : `${name} es un proyecto base generado por _scaffolder con el stack ${meta.label}.`;
@@ -190,6 +230,9 @@ ${contextSummary}
 
 - Tipo de proyecto: ${typeLine}
 - Objetivo principal: ${goalLine}
+- Público objetivo: ${audienceLine}
+- Tono: ${toneLine}
+- Calidad inicial: ${qualityLine} — ${qualityGuidance(qualityLine)}
 
 ## Estado del Brief
 
@@ -219,11 +262,14 @@ ${contextSummary}
 - Stack: ${meta.label}
 - Hosting por defecto: ${meta.hosting}
 - Seguimiento operativo: ntfy
+- Calidad inicial: ${qualityLine}
 
 ## Product Context
 
 - Tipo de proyecto: ${typeLine}
 - Objetivo principal: ${goalLine}
+- Público objetivo: ${audienceLine}
+- Tono: ${toneLine}
 
 ## External Services
 
@@ -237,7 +283,7 @@ Suscripción: ${subscribeUrl}
 
 1. Normalizar el brief real del proyecto.
 2. Completar arquitectura específica del dominio.
-3. Ajustar contenido, datos de ejemplo, agentes, skills y prompts.
+3. Ajustar contenido, datos de ejemplo, agentes, skills y prompts según público, tono y calidad inicial.
 4. Ejecutar validación antes de continuar.
 
 ## Session Log
@@ -285,6 +331,9 @@ node /Users/lama/Desktop/proyectos_web/_scaffolder/scripts/validate-project.mjs 
 
 - Tipo: ${typeLine}
 - Objetivo: ${goalLine}
+- Público: ${audienceLine}
+- Tono: ${toneLine}
+- Calidad inicial: ${qualityLine}
 
 ## Módulos Iniciales
 
@@ -408,6 +457,9 @@ Dirección asumida por _scaffolder hasta recibir brand book, logo, colores o ref
 
 Contexto de producto: ${typeLine}
 Objetivo visual/comercial: ${goalLine}
+Público objetivo: ${audienceLine}
+Tono: ${toneLine}
+Calidad inicial: ${qualityLine} — ${qualityGuidance(qualityLine)}
 
 ## Tokens
 
@@ -451,6 +503,9 @@ Lee primero \`CLAUDE.md\`, \`PROJECT_BRIEF.md\`, \`AGENTS.md\`, \`ARCHITECTURE.m
 Stack: \`${stack}\`
 Tipo: ${typeLine}
 Objetivo: ${goalLine}
+Público: ${audienceLine}
+Tono: ${toneLine}
+Calidad inicial: ${qualityLine}
 
 Sitúate en el estado actual, identifica el siguiente paso recomendado y antes de tocar código explica brevemente qué vas a hacer. Mantén \`CLAUDE.md\` actualizado y registra deuda en \`KNOWN_GAPS.md\`.
 `;
@@ -474,6 +529,9 @@ Sitúate en el estado actual, identifica el siguiente paso recomendado y antes d
         stack,
         type: projectType,
         goal: projectGoal,
+        audience: projectAudience,
+        tone: projectTone,
+        quality: projectQuality,
         ntfyTopic: topic,
         createdAt: new Date().toISOString(),
       },
@@ -528,15 +586,35 @@ const name = titleize(slug);
 const topic = makeTopic(slug);
 const projectType = cleanInput(args.type);
 const projectGoal = cleanInput(args.goal);
+const projectAudience = cleanInput(args.audience);
+const projectTone = cleanInput(args.tone);
+const projectQuality = normalizeQuality(args.quality);
 
 mkdirSync(projectRoot, { recursive: true });
 copyTemplate(args.stack, projectRoot);
 
 const sourceBriefPath = path.join(projectRoot, "docs", "source-brief.md");
-const briefFile = copyBrief(args.brief, sourceBriefPath);
+if (args.brief && args["brief-inline"]) {
+  console.error("Use either --brief or --brief-inline, not both.");
+  process.exit(1);
+}
+const briefFile = args["brief-inline"]
+  ? writeInlineBrief(args["brief-inline"], sourceBriefPath)
+  : copyBrief(args.brief, sourceBriefPath);
 
 for (const [relativePath, content] of Object.entries(
-  docs({ name, slug, stack: args.stack, topic, briefFile, projectType, projectGoal }),
+  docs({
+    name,
+    slug,
+    stack: args.stack,
+    topic,
+    briefFile,
+    projectType,
+    projectGoal,
+    projectAudience,
+    projectTone,
+    projectQuality,
+  }),
 )) {
   writeText(path.join(projectRoot, relativePath), content);
 }
