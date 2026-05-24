@@ -91,5 +91,8 @@ La validación es estricta en higiene:
 - stack declarado
 - `.gitignore`
 - reporte persistente en `reports/scaffold-validation.json`
+- assets locales referenciados existentes en proyectos frontend
+- imágenes locales por debajo de 500 KB en proyectos frontend
+- fuentes declaradas cargadas o pertenecientes al stack de system fonts
 
 La validación no puntúa todavía calidad subjetiva de copy, diseño o arquitectura profunda.

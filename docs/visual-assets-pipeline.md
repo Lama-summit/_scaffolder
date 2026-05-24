@@ -45,3 +45,14 @@ Una fase posterior puede añadir:
 - El copy visible respeta el idioma del proyecto, incluyendo tildes y formato local.
 - Los assets generados están guardados dentro del repo y no apuntan a rutas temporales.
 - `KNOWN_GAPS.md` identifica si una imagen generada debe sustituirse por fotografía real.
+
+## Validación Automática Actual
+
+`scripts/validate-project.mjs` comprueba en proyectos frontend:
+
+- que los assets locales referenciados existen
+- que las imágenes locales no superan 500 KB
+- que las fuentes declaradas están cargadas o son system fonts
+- que el reporte persistente recoge métricas en `assetStats`
+
+Esto no reemplaza la QA visual con Browser; solo cubre fallos mecánicos.

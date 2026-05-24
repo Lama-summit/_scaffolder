@@ -19,6 +19,31 @@ const REQUIRED_DIRS = ["prompts"];
 
 const FRONTEND_STACKS = new Set(["vanilla-static", "next-supabase"]);
 
+const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif", ".svg"]);
+const MAX_IMAGE_BYTES = 500 * 1024;
+const SYSTEM_FONT_NAMES = new Set([
+  "system-ui",
+  "ui-sans-serif",
+  "ui-serif",
+  "ui-monospace",
+  "serif",
+  "sans-serif",
+  "monospace",
+  "cursive",
+  "fantasy",
+  "emoji",
+  "math",
+  "fangsong",
+  "-apple-system",
+  "blinkmacsystemfont",
+  "segoe ui",
+  "arial",
+  "helvetica",
+  "georgia",
+  "times new roman",
+  "roboto",
+]);
+
 const FORBIDDEN_PATTERNS = [
   "[nombre-proyecto]",
   "[slug-proyecto]",
@@ -46,7 +71,7 @@ function usage() {
   console.error("Usage: node scripts/validate-project.mjs <project-path>");
 }
 
-function writeReport(projectRoot, { ok, errors, checkedFiles, stack, topic }) {
+function writeReport(projectRoot, { ok, errors, checkedFiles, stack, topic, assetStats }) {
   const reportsDir = path.join(projectRoot, "reports");
   mkdirSync(reportsDir, { recursive: true });
   const reportPath = path.join(reportsDir, "scaffold-validation.json");
@@ -60,6 +85,7 @@ function writeReport(projectRoot, { ok, errors, checkedFiles, stack, topic }) {
         existing.stack === stack &&
         existing.ntfyTopic === topic &&
         existing.checkedFiles === checkedFiles &&
+        JSON.stringify(existing.assetStats || {}) === JSON.stringify(assetStats || {}) &&
         JSON.stringify(existing.errors || []) === JSON.stringify(errors);
       if (sameResult && existing.generatedAt) generatedAt = existing.generatedAt;
     } catch {
@@ -73,6 +99,7 @@ function writeReport(projectRoot, { ok, errors, checkedFiles, stack, topic }) {
     stack,
     ntfyTopic: topic,
     checkedFiles,
+    assetStats,
     errors,
   };
   writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
@@ -114,6 +141,153 @@ function parseEnv(content) {
     values.set(key, rest.join("="));
   }
   return values;
+}
+
+function isExternalReference(reference) {
+  return (
+    reference.startsWith("http://") ||
+    reference.startsWith("https://") ||
+    reference.startsWith("//") ||
+    reference.startsWith("data:") ||
+    reference.startsWith("#") ||
+    reference.startsWith("mailto:") ||
+    reference.startsWith("tel:")
+  );
+}
+
+function cleanReference(reference) {
+  return reference.trim().replace(/^['"]|['"]$/g, "").split("#")[0].split("?")[0];
+}
+
+function projectFileExists(projectRoot, fromFile, reference) {
+  const cleaned = cleanReference(reference);
+  if (!cleaned || isExternalReference(cleaned)) return true;
+  const baseDir = path.dirname(fromFile);
+  const target = cleaned.startsWith("/")
+    ? path.join(projectRoot, cleaned.slice(1))
+    : path.resolve(baseDir, cleaned);
+  return target.startsWith(projectRoot) && existsSync(target);
+}
+
+function collectHtmlAssetReferences(content) {
+  const references = [];
+  const attrPattern = /\b(?:src|href)\s*=\s*["']([^"']+)["']/gi;
+  for (const match of content.matchAll(attrPattern)) references.push(match[1]);
+
+  const srcsetPattern = /\bsrcset\s*=\s*["']([^"']+)["']/gi;
+  for (const match of content.matchAll(srcsetPattern)) {
+    for (const candidate of match[1].split(",")) {
+      const [url] = candidate.trim().split(/\s+/);
+      if (url) references.push(url);
+    }
+  }
+  return references;
+}
+
+function collectCssAssetReferences(content) {
+  const references = [];
+  const urlPattern = /url\(\s*(['"]?)([^'")]+)\1\s*\)/gi;
+  for (const match of content.matchAll(urlPattern)) references.push(match[2]);
+  return references;
+}
+
+function collectLoadedFontNames(content) {
+  const loaded = new Set();
+  const importPattern = /@import\s+url\(["']?([^"')]+)["']?\)/gi;
+  for (const match of content.matchAll(importPattern)) {
+    const familyMatch = match[1].match(/[?&]family=([^:&]+)/i);
+    if (familyMatch) loaded.add(decodeURIComponent(familyMatch[1]).replace(/\+/g, " ").toLowerCase());
+  }
+
+  const fontFaceBlocks = content.match(/@font-face\s*{[^}]+}/gi) || [];
+  for (const block of fontFaceBlocks) {
+    const familyMatch = block.match(/font-family\s*:\s*([^;]+);/i);
+    if (familyMatch) loaded.add(normalizeFontName(familyMatch[1]));
+  }
+  return loaded;
+}
+
+function normalizeFontName(fontName) {
+  return fontName.trim().replace(/^['"]|['"]$/g, "").toLowerCase();
+}
+
+function collectDeclaredFontNames(content) {
+  const declared = new Set();
+  const pattern = /font-family\s*:\s*([^;]+);/gi;
+  for (const match of content.matchAll(pattern)) {
+    if (match[0].startsWith("--")) continue;
+    for (const rawName of match[1].split(",")) {
+      const normalized = normalizeFontName(rawName);
+      if (normalized && !normalized.startsWith("var(")) declared.add(normalized);
+    }
+  }
+  return declared;
+}
+
+function validateFrontendAssets(projectRoot, checkedFiles, errors) {
+  const assetStats = {
+    localReferencesChecked: 0,
+    imagesChecked: 0,
+    oversizedImages: 0,
+    declaredFontsChecked: 0,
+  };
+  const loadedFonts = new Set();
+  const declaredFonts = new Map();
+
+  for (const filePath of checkedFiles) {
+    const extension = path.extname(filePath).toLowerCase();
+    if (![".html", ".css", ".tsx", ".jsx"].includes(extension)) continue;
+
+    let content;
+    try {
+      content = readText(filePath);
+    } catch {
+      continue;
+    }
+
+    for (const font of collectLoadedFontNames(content)) loadedFonts.add(font);
+    for (const font of collectDeclaredFontNames(content)) {
+      if (!declaredFonts.has(font)) declaredFonts.set(font, []);
+      declaredFonts.get(font).push(path.relative(projectRoot, filePath));
+    }
+
+    const references =
+      extension === ".css"
+        ? collectCssAssetReferences(content)
+        : collectHtmlAssetReferences(content).concat(collectCssAssetReferences(content));
+
+    for (const reference of references) {
+      const cleaned = cleanReference(reference);
+      if (!cleaned || isExternalReference(cleaned)) continue;
+      assetStats.localReferencesChecked += 1;
+      if (!projectFileExists(projectRoot, filePath, cleaned)) {
+        errors.push(`Missing local asset referenced from ${path.relative(projectRoot, filePath)}: ${reference}`);
+      }
+    }
+  }
+
+  for (const filePath of checkedFiles) {
+    const extension = path.extname(filePath).toLowerCase();
+    if (!IMAGE_EXTENSIONS.has(extension)) continue;
+    assetStats.imagesChecked += 1;
+    const size = statSync(filePath).size;
+    if (size > MAX_IMAGE_BYTES) {
+      assetStats.oversizedImages += 1;
+      errors.push(
+        `Image exceeds ${Math.round(MAX_IMAGE_BYTES / 1024)}KB: ${path.relative(projectRoot, filePath)} (${Math.round(
+          size / 1024,
+        )}KB)`,
+      );
+    }
+  }
+
+  for (const [font, files] of declaredFonts.entries()) {
+    assetStats.declaredFontsChecked += 1;
+    if (SYSTEM_FONT_NAMES.has(font) || loadedFonts.has(font)) continue;
+    errors.push(`Font declared but not loaded: "${font}" in ${[...new Set(files)].join(", ")}`);
+  }
+
+  return assetStats;
 }
 
 const projectPathArg = process.argv[2];
@@ -214,12 +388,15 @@ for (const filePath of checkedFiles) {
   }
 }
 
+const assetStats = FRONTEND_STACKS.has(stack) ? validateFrontendAssets(projectRoot, checkedFiles, errors) : null;
+
 const reportData = {
   ok: errors.length === 0,
   errors,
   checkedFiles: checkedFiles.length,
   stack,
   topic,
+  assetStats,
 };
 
 if (errors.length) fail(projectRoot, reportData);

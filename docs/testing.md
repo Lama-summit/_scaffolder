@@ -18,6 +18,18 @@ npm test
 - Validación de cada proyecto generado.
 - Revalidación idempotente.
 - Working tree limpio dentro de cada repo generado después de revalidar.
+- Validación frontend de assets locales, imágenes pesadas y fuentes declaradas.
+
+## Validaciones de Assets
+
+En stacks frontend, `validate-project.mjs` comprueba:
+
+- referencias locales en `src`, `href`, `srcset` y `url(...)`
+- existencia de assets locales referenciados desde HTML/CSS/JSX/TSX
+- imágenes locales mayores de 500 KB
+- fuentes declaradas en CSS que no sean system fonts ni estén cargadas con `@font-face` o `@import`
+
+El reporte `reports/scaffold-validation.json` incluye `assetStats` con métricas de estas comprobaciones.
 
 ## Cuándo Ejecutarlo
 
