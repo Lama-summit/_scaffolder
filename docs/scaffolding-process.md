@@ -91,6 +91,7 @@ Después del script:
 - Si hay frontend, realiza QA visual en desktop y móvil.
 - Si el proyecto necesita recursos gráficos, sigue `docs/visual-assets-pipeline.md`.
 - Si el proyecto necesita motion, UI premium, dashboards o Three.js, sigue `docs/ux-ui-resource-catalog.md`.
+- En proyectos frontend generados, usa `skills/visual-asset-director.md` como checklist operativo.
 
 ## 7. Validación
 

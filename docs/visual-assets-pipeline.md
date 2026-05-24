@@ -8,7 +8,7 @@ Este documento prepara la mejora futura de calidad visual en proyectos generados
 - `browser`: revisar UI local, screenshots, composición, responsive, assets rotos y problemas visuales.
 - `gsap-*`: animación web cuando el proyecto necesite motion, scroll, timelines, Draggable o performance específica.
 
-No hay todavía una skill específica de pipeline gráfico, optimización de imágenes o dirección de arte automatizada. Hasta crearla, Codex debe coordinar `imagegen` + `browser` + documentación de marca.
+`skills/visual-asset-director.md` define el flujo operativo local para proyectos frontend generados. Hasta que exista un pipeline automatizado de optimización, Codex debe coordinar esa skill con `imagegen`, Browser y la documentación de marca.
 
 Para librerías, componentes y referencias UX/UI, lee también `docs/ux-ui-resource-catalog.md`.
 
@@ -29,7 +29,6 @@ Una fase posterior puede añadir:
 - `assets/optimized/` o `public/img/` según stack.
 - Script de inventario de assets.
 - Script de detección de imágenes pesadas.
-- Skill local `visual-asset-director`.
 - Skill o referencia instalada de Transitions.dev para motion CSS.
 - Prompts para generar hero images, mockups y sets coherentes por marca.
 

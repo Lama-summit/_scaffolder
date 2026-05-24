@@ -166,6 +166,16 @@ if (!stack) {
   if (FRONTEND_STACKS.has(stack) && !existsSync(path.join(projectRoot, "BRAND.md"))) {
     errors.push(`Missing BRAND.md for frontend stack: ${stack}`);
   }
+  if (FRONTEND_STACKS.has(stack)) {
+    const visualSkill = path.join(projectRoot, "skills", "visual-asset-director.md");
+    const visualPrompt = path.join(projectRoot, "prompts", "opencode-visual-polish.md");
+    if (!existsSync(visualSkill)) {
+      errors.push(`Missing frontend visual skill: ${path.relative(projectRoot, visualSkill)}`);
+    }
+    if (!existsSync(visualPrompt)) {
+      errors.push(`Missing frontend visual prompt: ${path.relative(projectRoot, visualPrompt)}`);
+    }
+  }
 }
 
 const envPath = path.join(projectRoot, ".env.example");

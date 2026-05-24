@@ -52,6 +52,9 @@ docs/
   testing.md
 prompts/
   opencode-scaffolder-mvp.md
+  opencode-visual-polish.md
+skills/
+  visual-asset-director.md
 scripts/
   new-project.mjs
   validate-project.mjs
@@ -91,6 +94,7 @@ La calidad de copy, arquitectura profunda, marca, diseño visual y dominio espec
 - Hacer commit inicial del scaffolder cuando se decida el alcance exacto a versionar.
 - Añadir `.gitignore` más específico si aparecen artefactos nuevos.
 - Diseñar una skill específica de dirección/optimización de recursos gráficos si `imagegen` + Browser no cubren suficiente.
+- `skills/visual-asset-director.md` ya existe como checklist operativo; pendiente convertirlo en skill global solo si demuestra utilidad en varios proyectos reales.
 - Evaluar instalación de la skill Transitions.dev si los proyectos empiezan a necesitar motion CSS de forma recurrente.
 
 ## Log
@@ -100,3 +104,4 @@ La calidad de copy, arquitectura profunda, marca, diseño visual y dominio espec
 - 2026-05-24: Fase 2 inicia con flags `--type`/`--goal`, reporte persistente de validación y documento de pipeline gráfico.
 - 2026-05-24: Añadido catálogo UX/UI y motion con criterios para Transitions.dev, Motion, Aceternity, Shadcn, charts, Three.js y QA visual.
 - 2026-05-24: Añadido `npm test` con runner sin dependencias para validar generación de los tres stacks MVP.
+- 2026-05-24: Añadida skill local `visual-asset-director` y prompt `opencode-visual-polish`; los proyectos frontend generados los reciben automáticamente.

@@ -149,6 +149,10 @@ function listPromptFiles() {
   return readdirSync(promptsRoot).filter((name) => name.endsWith(".md")).sort();
 }
 
+function readScaffolderFile(...segments) {
+  return safeRead(path.join(SCAFFOLDER_ROOT, ...segments));
+}
+
 function cleanInput(value) {
   if (!value || value === true) return null;
   return String(value).trim().replace(/\s+/g, " ");
@@ -451,7 +455,7 @@ Objetivo: ${goalLine}
 Sitúate en el estado actual, identifica el siguiente paso recomendado y antes de tocar código explica brevemente qué vas a hacer. Mantén \`CLAUDE.md\` actualizado y registra deuda en \`KNOWN_GAPS.md\`.
 `;
 
-  return {
+  const generatedDocs = {
     "PROJECT_BRIEF.md": projectBrief,
     "CLAUDE.md": claude,
     "AGENTS.md": agents,
@@ -478,12 +482,20 @@ Sitúate en el estado actual, identifica el siguiente paso recomendado y antes d
     )}\n`,
     "prompts/opencode-start.md": workerPrompt,
     ...(meta.brand ? { "BRAND.md": brand } : {}),
+    ...(meta.brand
+      ? {
+          "skills/visual-asset-director.md": readScaffolderFile("skills", "visual-asset-director.md"),
+          "prompts/opencode-visual-polish.md": readScaffolderFile("prompts", "opencode-visual-polish.md"),
+        }
+      : {}),
     ...(promptList.length
       ? {
           "prompts/README.md": `# Prompts\n\nPrompt inicial generado para ${name}. Añade prompts específicos según el dominio.\n`,
         }
       : {}),
   };
+
+  return generatedDocs;
 }
 
 const args = parseArgs(process.argv.slice(2));

@@ -68,6 +68,7 @@ npm test
 ## Prompts Disponibles
 
 - `prompts/opencode-scaffolder-mvp.md`: ampliar scripts, plantillas o validadores del MVP sin romper el contrato.
+- `prompts/opencode-visual-polish.md`: pulido visual de proyectos frontend generados.
 
 ## Validación Antes de Cerrar
 

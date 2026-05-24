@@ -2,6 +2,8 @@
 
 Este catálogo no instala dependencias por defecto. Sirve para que Codex/OpenCode elijan recursos con criterio según stack, objetivo y coste de mantenimiento.
 
+En proyectos frontend generados, aplica este catálogo desde `skills/visual-asset-director.md` y `prompts/opencode-visual-polish.md`.
+
 ## Principio
 
 Usa recursos premium como aceleradores, no como decoración automática. Cada componente, transición o asset debe mejorar claridad, conversión, feedback, navegación o percepción de calidad.

@@ -20,6 +20,13 @@ prompts/
 
 `BRAND.md` es obligatorio para stacks con frontend en el MVP.
 
+Los stacks frontend deben incluir además:
+
+```txt
+skills/visual-asset-director.md
+prompts/opencode-visual-polish.md
+```
+
 El validador genera además:
 
 ```txt
