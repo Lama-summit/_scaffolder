@@ -7,6 +7,8 @@ Lee `CLAUDE.md`, `AI_WORKFLOW_SYSTEM.md` y estos documentos antes de cambios est
 - `docs/scaffolding-process.md`
 - `docs/generated-project-contract.md`
 - `docs/opencode-routing.md`
+- `docs/visual-assets-pipeline.md`
+- `docs/ux-ui-resource-catalog.md`
 
 Este repo es una lanzadera híbrida: scripts para tareas mecánicas y Codex/OpenCode para decisiones de producto, arquitectura, contenido y diseño.
 
@@ -33,6 +35,7 @@ El proyecto generado debe quedar listo para abrir en Codex Desktop, OpenCode, Cl
 
 ```bash
 node scripts/new-project.mjs --name demo --stack vanilla-static
+node scripts/new-project.mjs --name demo --stack vanilla-static --type "landing de cafeteria local" --goal "atraer visitas y contacto"
 node scripts/new-project.mjs --name demo-app --stack next-supabase --brief path/to/brief.md
 node scripts/validate-project.mjs /Users/lama/Desktop/proyectos_web/demo
 ```
@@ -67,6 +70,7 @@ node scripts/validate-project.mjs /Users/lama/Desktop/proyectos_web/demo
 ## Validación Antes de Cerrar
 
 - Ejecuta `node scripts/validate-project.mjs <ruta-proyecto>` contra al menos una generación real si tocaste scripts o plantillas.
+- Comprueba que `reports/scaffold-validation.json` se genera dentro del proyecto.
 - Comprueba que no hay placeholders prohibidos en el proyecto generado.
 - Comprueba que `.env.example` contiene `NTFY_TOPIC`, `NTFY_SERVER_URL` y `NTFY_SUBSCRIBE_URL`.
 - Comprueba que `CLAUDE.md` refleja cambios relevantes.

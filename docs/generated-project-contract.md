@@ -20,6 +20,14 @@ prompts/
 
 `BRAND.md` es obligatorio para stacks con frontend en el MVP.
 
+El validador genera además:
+
+```txt
+reports/scaffold-validation.json
+```
+
+Este reporte debe quedar incluido en el commit inicial cuando se usa `new-project.mjs`.
+
 ## Variables ntfy Obligatorias
 
 `.env.example` debe incluir:
@@ -75,5 +83,6 @@ La validación es estricta en higiene:
 - variables ntfy
 - stack declarado
 - `.gitignore`
+- reporte persistente en `reports/scaffold-validation.json`
 
 La validación no puntúa todavía calidad subjetiva de copy, diseño o arquitectura profunda.

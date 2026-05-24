@@ -48,7 +48,7 @@ const STACK_META = {
 
 function usage() {
   console.error(`Usage:
-  node scripts/new-project.mjs --name <name> --stack <stack> [--brief path/to/brief.md] [--target-dir /path]
+  node scripts/new-project.mjs --name <name> --stack <stack> [--type "project type"] [--goal "main goal"] [--brief path/to/brief.md] [--target-dir /path]
 
 Stacks:
   ${[...VALID_STACKS].join(", ")}`);
@@ -149,11 +149,28 @@ function listPromptFiles() {
   return readdirSync(promptsRoot).filter((name) => name.endsWith(".md")).sort();
 }
 
-function docs({ name, slug, stack, topic, briefFile }) {
+function cleanInput(value) {
+  if (!value || value === true) return null;
+  return String(value).trim().replace(/\s+/g, " ");
+}
+
+function renderBuildSection(meta) {
+  if (meta.buildCommand === "No build step") {
+    return "No aplica. Este stack no necesita build en el MVP.";
+  }
+  return `\`\`\`bash\n${meta.buildCommand}\n\`\`\``;
+}
+
+function docs({ name, slug, stack, topic, briefFile, projectType, projectGoal }) {
   const meta = STACK_META[stack];
   const date = new Date().toISOString().slice(0, 10);
   const subscribeUrl = `https://ntfy.sh/${topic}`;
   const promptList = listPromptFiles();
+  const typeLine = projectType || "Pendiente de definir por Codex tras leer la idea o brief.";
+  const goalLine = projectGoal || "Pendiente de definir por Codex tras leer la idea o brief.";
+  const contextSummary = projectType
+    ? `${name} es ${projectType}${projectGoal ? ` cuyo objetivo principal es ${projectGoal}` : ""}.`
+    : `${name} es un proyecto base generado por _scaffolder con el stack ${meta.label}.`;
 
   const projectBrief = `# PROJECT_BRIEF.md — ${name}
 
@@ -163,7 +180,12 @@ Carpeta: \`${slug}\`
 
 ## Resumen
 
-${name} es un proyecto base generado por _scaffolder con el stack ${meta.label}.
+${contextSummary}
+
+## Contexto Inicial
+
+- Tipo de proyecto: ${typeLine}
+- Objetivo principal: ${goalLine}
 
 ## Estado del Brief
 
@@ -186,13 +208,18 @@ Codex debe leer este archivo junto con \`CLAUDE.md\`, \`ARCHITECTURE.md\`, \`SET
 
 ## Overview
 
-Proyecto generado con _scaffolder usando \`${stack}\`.
+${contextSummary}
 
 ## Tech Stack
 
 - Stack: ${meta.label}
 - Hosting por defecto: ${meta.hosting}
 - Seguimiento operativo: ntfy
+
+## Product Context
+
+- Tipo de proyecto: ${typeLine}
+- Objetivo principal: ${goalLine}
 
 ## External Services
 
@@ -250,6 +277,11 @@ node /Users/lama/Desktop/proyectos_web/_scaffolder/scripts/validate-project.mjs 
 
 \`${stack}\` — ${meta.description}
 
+## Producto
+
+- Tipo: ${typeLine}
+- Objetivo: ${goalLine}
+
 ## Módulos Iniciales
 
 La plantilla incluye una base mínima funcional. Codex debe completar esta arquitectura con módulos, rutas, modelos de datos y límites cliente/servidor después de normalizar el brief.
@@ -274,9 +306,7 @@ ${meta.hosting} asignado por defecto para \`${stack}\`.
 
 ## Build
 
-\`\`\`bash
-${meta.buildCommand}
-\`\`\`
+${renderBuildSection(meta)}
 
 ## ntfy
 
@@ -341,6 +371,7 @@ Normaliza el brief real, actualiza \`PROJECT_BRIEF.md\` y completa \`ARCHITECTUR
 - Arquitectura de dominio pendiente.
 - Agentes y skills específicos pendientes de ajuste.
 - Copy y datos de ejemplo deben adaptarse al producto real.
+- Recursos gráficos definitivos pendientes de selección, generación, optimización o sustitución.
 `;
 
   const roadmap = `# ROADMAP.md — ${name}
@@ -350,6 +381,7 @@ Normaliza el brief real, actualiza \`PROJECT_BRIEF.md\` y completa \`ARCHITECTUR
 - Completar \`PROJECT_BRIEF.md\`.
 - Completar \`ARCHITECTURE.md\`.
 - Ajustar \`BRAND.md\` si hay frontend.
+- Definir estrategia de recursos gráficos: fotos, mockups, iconografía, logos, formatos y optimización.
 
 ## Fase 2 — Implementación Inicial
 
@@ -370,6 +402,9 @@ Normaliza el brief real, actualiza \`PROJECT_BRIEF.md\` y completa \`ARCHITECTUR
 
 Dirección asumida por _scaffolder hasta recibir brand book, logo, colores o referencias.
 
+Contexto de producto: ${typeLine}
+Objetivo visual/comercial: ${goalLine}
+
 ## Tokens
 
 - Color principal: definido en la plantilla del stack.
@@ -379,6 +414,12 @@ Dirección asumida por _scaffolder hasta recibir brand book, logo, colores o ref
 ## Pendiente
 
 Codex debe reemplazar esta dirección con valores reales si el usuario aporta marca o referencias.
+
+## Recursos Gráficos
+
+- Usar la skill \`imagegen\` cuando el proyecto necesite fotos, hero images, mockups o assets raster generados.
+- Usar Browser para QA visual en desktop y móvil.
+- Optimizar y guardar assets dentro del repo antes de referenciarlos desde el código.
 `;
 
   const env = `# ntfy — seguimiento operativo del proyecto
@@ -404,6 +445,8 @@ venv/
 Lee primero \`CLAUDE.md\`, \`PROJECT_BRIEF.md\`, \`AGENTS.md\`, \`ARCHITECTURE.md\`, \`SETUP.md\`, \`DEPLOY.md\`, \`KNOWN_GAPS.md\` y \`ROADMAP.md\`. Si existe \`BRAND.md\`, léelo también.
 
 Stack: \`${stack}\`
+Tipo: ${typeLine}
+Objetivo: ${goalLine}
 
 Sitúate en el estado actual, identifica el siguiente paso recomendado y antes de tocar código explica brevemente qué vas a hacer. Mantén \`CLAUDE.md\` actualizado y registra deuda en \`KNOWN_GAPS.md\`.
 `;
@@ -420,6 +463,19 @@ Sitúate en el estado actual, identifica el siguiente paso recomendado y antes d
     ".env.example": env,
     ".gitignore": gitignore,
     ".scaffolder-stack": `${stack}\n`,
+    ".scaffolder-context.json": `${JSON.stringify(
+      {
+        name,
+        slug,
+        stack,
+        type: projectType,
+        goal: projectGoal,
+        ntfyTopic: topic,
+        createdAt: new Date().toISOString(),
+      },
+      null,
+      2,
+    )}\n`,
     "prompts/opencode-start.md": workerPrompt,
     ...(meta.brand ? { "BRAND.md": brand } : {}),
     ...(promptList.length
@@ -458,6 +514,8 @@ if (existsSync(projectRoot) && readdirSync(projectRoot).length > 0) {
 
 const name = titleize(slug);
 const topic = makeTopic(slug);
+const projectType = cleanInput(args.type);
+const projectGoal = cleanInput(args.goal);
 
 mkdirSync(projectRoot, { recursive: true });
 copyTemplate(args.stack, projectRoot);
@@ -466,12 +524,10 @@ const sourceBriefPath = path.join(projectRoot, "docs", "source-brief.md");
 const briefFile = copyBrief(args.brief, sourceBriefPath);
 
 for (const [relativePath, content] of Object.entries(
-  docs({ name, slug, stack: args.stack, topic, briefFile }),
+  docs({ name, slug, stack: args.stack, topic, briefFile, projectType, projectGoal }),
 )) {
   writeText(path.join(projectRoot, relativePath), content);
 }
-
-const commitWarning = tryInitialCommit(projectRoot);
 
 const validation = spawnSync("node", [path.join(SCAFFOLDER_ROOT, "scripts", "validate-project.mjs"), projectRoot], {
   cwd: SCAFFOLDER_ROOT,
@@ -484,6 +540,8 @@ if (validation.status !== 0) {
   console.error(validation.stderr);
   process.exit(validation.status ?? 1);
 }
+
+const commitWarning = tryInitialCommit(projectRoot);
 
 console.log(validation.stdout.trim());
 if (commitWarning) console.warn(`Warning: ${commitWarning}`);

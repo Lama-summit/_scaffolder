@@ -18,6 +18,12 @@ Fase 1 implementada:
 - Las tres plantillas MVP generan demos válidas en `/tmp`.
 - Este repo fue inicializado como git para poder versionar el scaffolder.
 
+Fase 2 en curso:
+
+- `new-project.mjs` acepta contexto ligero con `--type` y `--goal`.
+- `validate-project.mjs` escribe `reports/scaffold-validation.json` dentro del proyecto generado.
+- Se añadió `docs/visual-assets-pipeline.md` para preparar mejora de recursos gráficos usando skills disponibles.
+
 ## Decisiones Cerradas
 
 - Modelo operativo: híbrido.
@@ -41,6 +47,8 @@ docs/
   scaffolding-process.md
   generated-project-contract.md
   opencode-routing.md
+  visual-assets-pipeline.md
+  ux-ui-resource-catalog.md
 prompts/
   opencode-scaffolder-mvp.md
 scripts/
@@ -56,6 +64,7 @@ templates/
 
 ```bash
 node scripts/new-project.mjs --name demo --stack vanilla-static
+node scripts/new-project.mjs --name demo --stack vanilla-static --type "landing de cafeteria local" --goal "atraer visitas y contacto"
 node scripts/new-project.mjs --name demo-app --stack next-supabase --brief path/to/brief.md
 node scripts/validate-project.mjs /Users/lama/Desktop/proyectos_web/demo
 ```
@@ -63,6 +72,8 @@ node scripts/validate-project.mjs /Users/lama/Desktop/proyectos_web/demo
 ## Validación
 
 El validador debe fallar si faltan archivos obligatorios, `prompts/`, `.gitignore`, variables ntfy o si quedan placeholders prohibidos.
+
+El validador escribe un reporte persistente en `reports/scaffold-validation.json`.
 
 La calidad de copy, arquitectura profunda, marca, diseño visual y dominio específico se revisan con Codex después de la generación base.
 
@@ -74,8 +85,12 @@ La calidad de copy, arquitectura profunda, marca, diseño visual y dominio espec
 - Añadir validación más profunda por stack cuando el MVP esté estable.
 - Hacer commit inicial del scaffolder cuando se decida el alcance exacto a versionar.
 - Añadir `.gitignore` más específico si aparecen artefactos nuevos.
+- Diseñar una skill específica de dirección/optimización de recursos gráficos si `imagegen` + Browser no cubren suficiente.
+- Evaluar instalación de la skill Transitions.dev si los proyectos empiezan a necesitar motion CSS de forma recurrente.
 
 ## Log
 
 - 2026-05-24: Se acuerda reestructuración híbrida MVP: docs especializadas, scripts Node.js, tres plantillas base y validador estricto de higiene.
 - 2026-05-24: Implementada fase 1 con docs reestructuradas, scripts MVP, plantillas `vanilla-static`, `next-supabase`, `fastapi-supabase`, validación demo y git inicializado.
+- 2026-05-24: Fase 2 inicia con flags `--type`/`--goal`, reporte persistente de validación y documento de pipeline gráfico.
+- 2026-05-24: Añadido catálogo UX/UI y motion con criterios para Transitions.dev, Motion, Aceternity, Shadcn, charts, Three.js y QA visual.

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 const REQUIRED_FILES = [
@@ -40,13 +40,48 @@ const SKIP_DIRS = new Set([
   "venv",
 ]);
 
+const SKIP_FILES = new Set(["reports/scaffold-validation.json"]);
+
 function usage() {
   console.error("Usage: node scripts/validate-project.mjs <project-path>");
 }
 
-function fail(errors) {
+function writeReport(projectRoot, { ok, errors, checkedFiles, stack, topic }) {
+  const reportsDir = path.join(projectRoot, "reports");
+  mkdirSync(reportsDir, { recursive: true });
+  const reportPath = path.join(reportsDir, "scaffold-validation.json");
+  let generatedAt = new Date().toISOString();
+  if (existsSync(reportPath)) {
+    try {
+      const existing = JSON.parse(readText(reportPath));
+      const sameResult =
+        existing.ok === ok &&
+        existing.projectRoot === projectRoot &&
+        existing.stack === stack &&
+        existing.ntfyTopic === topic &&
+        existing.checkedFiles === checkedFiles &&
+        JSON.stringify(existing.errors || []) === JSON.stringify(errors);
+      if (sameResult && existing.generatedAt) generatedAt = existing.generatedAt;
+    } catch {
+      generatedAt = new Date().toISOString();
+    }
+  }
+  const report = {
+    ok,
+    generatedAt,
+    projectRoot,
+    stack,
+    ntfyTopic: topic,
+    checkedFiles,
+    errors,
+  };
+  writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+}
+
+function fail(projectRoot, reportData) {
+  writeReport(projectRoot, reportData);
   console.error("\nValidation failed:");
-  for (const error of errors) console.error(`- ${error}`);
+  for (const error of reportData.errors) console.error(`- ${error}`);
   process.exit(1);
 }
 
@@ -54,6 +89,8 @@ function walkFiles(root, current = root, files = []) {
   for (const entry of readdirSync(current)) {
     if (SKIP_DIRS.has(entry)) continue;
     const fullPath = path.join(current, entry);
+    const relativePath = path.relative(root, fullPath);
+    if (SKIP_FILES.has(relativePath)) continue;
     const stats = statSync(fullPath);
     if (stats.isDirectory()) {
       walkFiles(root, fullPath, files);
@@ -89,7 +126,8 @@ const projectRoot = path.resolve(projectPathArg);
 const errors = [];
 
 if (!existsSync(projectRoot)) {
-  fail([`Project path does not exist: ${projectRoot}`]);
+  console.error(`Project path does not exist: ${projectRoot}`);
+  process.exit(1);
 }
 
 for (const file of REQUIRED_FILES) {
@@ -131,10 +169,11 @@ if (!stack) {
 }
 
 const envPath = path.join(projectRoot, ".env.example");
+let topic = null;
 if (existsSync(envPath)) {
   const env = parseEnv(readText(envPath));
   const server = env.get("NTFY_SERVER_URL");
-  const topic = env.get("NTFY_TOPIC");
+  topic = env.get("NTFY_TOPIC");
   const subscribe = env.get("NTFY_SUBSCRIBE_URL");
   if (!server) errors.push(".env.example missing NTFY_SERVER_URL");
   if (!topic) errors.push(".env.example missing NTFY_TOPIC");
@@ -150,7 +189,8 @@ if (existsSync(envPath)) {
   }
 }
 
-for (const filePath of walkFiles(projectRoot)) {
+const checkedFiles = walkFiles(projectRoot);
+for (const filePath of checkedFiles) {
   let content;
   try {
     content = readText(filePath);
@@ -164,6 +204,15 @@ for (const filePath of walkFiles(projectRoot)) {
   }
 }
 
-if (errors.length) fail(errors);
+const reportData = {
+  ok: errors.length === 0,
+  errors,
+  checkedFiles: checkedFiles.length,
+  stack,
+  topic,
+};
 
+if (errors.length) fail(projectRoot, reportData);
+
+writeReport(projectRoot, reportData);
 console.log(`Validation passed: ${projectRoot}`);

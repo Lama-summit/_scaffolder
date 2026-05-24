@@ -74,9 +74,10 @@ Opcional:
 
 ```bash
 node scripts/new-project.mjs --name <nombre> --stack <stack> --brief path/to/brief.md
+node scripts/new-project.mjs --name <nombre> --stack <stack> --type "landing de cafeteria local" --goal "atraer visitas y contacto"
 ```
 
-El script crea la base mecánica. Codex adapta después contenido específico, arquitectura, marca, agentes y skills.
+El script crea la base mecánica. `--type` y `--goal` sirven para dejar contexto mínimo en los documentos sin convertir el script en un generador inteligente. Codex adapta después contenido específico, arquitectura, marca, agentes y skills.
 
 ## 6. Adaptación por Codex
 
@@ -88,6 +89,8 @@ Después del script:
 - Crea o mejora agentes y skills específicos.
 - Rellena copy y datos de ejemplo realistas.
 - Si hay frontend, realiza QA visual en desktop y móvil.
+- Si el proyecto necesita recursos gráficos, sigue `docs/visual-assets-pipeline.md`.
+- Si el proyecto necesita motion, UI premium, dashboards o Three.js, sigue `docs/ux-ui-resource-catalog.md`.
 
 ## 7. Validación
 
@@ -96,6 +99,8 @@ Ejecuta:
 ```bash
 node scripts/validate-project.mjs /Users/lama/Desktop/proyectos_web/<slug>
 ```
+
+El validador escribe `reports/scaffold-validation.json` dentro del proyecto.
 
 Si hay stack con build, ejecuta también sus comandos propios (`npm run build`, tests, lint o equivalente).
 
