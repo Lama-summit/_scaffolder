@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "test": "node scripts/test-scaffolder.mjs",
+    "validate:demo": "node scripts/test-scaffolder.mjs"
+  },
+  "private": true,
+  "type": "module"
+}

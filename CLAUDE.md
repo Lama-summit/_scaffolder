@@ -49,11 +49,13 @@ docs/
   opencode-routing.md
   visual-assets-pipeline.md
   ux-ui-resource-catalog.md
+  testing.md
 prompts/
   opencode-scaffolder-mvp.md
 scripts/
   new-project.mjs
   validate-project.mjs
+  test-scaffolder.mjs
 templates/
   vanilla-static/
   next-supabase/
@@ -67,6 +69,7 @@ node scripts/new-project.mjs --name demo --stack vanilla-static
 node scripts/new-project.mjs --name demo --stack vanilla-static --type "landing de cafeteria local" --goal "atraer visitas y contacto"
 node scripts/new-project.mjs --name demo-app --stack next-supabase --brief path/to/brief.md
 node scripts/validate-project.mjs /Users/lama/Desktop/proyectos_web/demo
+npm test
 ```
 
 ## Validación
@@ -74,6 +77,8 @@ node scripts/validate-project.mjs /Users/lama/Desktop/proyectos_web/demo
 El validador debe fallar si faltan archivos obligatorios, `prompts/`, `.gitignore`, variables ntfy o si quedan placeholders prohibidos.
 
 El validador escribe un reporte persistente en `reports/scaffold-validation.json`.
+
+`npm test` genera y valida los tres stacks MVP en `/tmp`, revalida cada repo y comprueba que el working tree queda limpio.
 
 La calidad de copy, arquitectura profunda, marca, diseño visual y dominio específico se revisan con Codex después de la generación base.
 
@@ -94,3 +99,4 @@ La calidad de copy, arquitectura profunda, marca, diseño visual y dominio espec
 - 2026-05-24: Implementada fase 1 con docs reestructuradas, scripts MVP, plantillas `vanilla-static`, `next-supabase`, `fastapi-supabase`, validación demo y git inicializado.
 - 2026-05-24: Fase 2 inicia con flags `--type`/`--goal`, reporte persistente de validación y documento de pipeline gráfico.
 - 2026-05-24: Añadido catálogo UX/UI y motion con criterios para Transitions.dev, Motion, Aceternity, Shadcn, charts, Three.js y QA visual.
+- 2026-05-24: Añadido `npm test` con runner sin dependencias para validar generación de los tres stacks MVP.
