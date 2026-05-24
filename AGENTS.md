@@ -10,6 +10,7 @@ Lee `CLAUDE.md`, `AI_WORKFLOW_SYSTEM.md` y estos documentos antes de cambios est
 - `docs/visual-assets-pipeline.md`
 - `docs/ux-ui-resource-catalog.md`
 - `docs/testing.md`
+- `docs/field-notes.md`
 
 Este repo es una lanzadera híbrida: scripts para tareas mecánicas y Codex/OpenCode para decisiones de producto, arquitectura, contenido y diseño.
 

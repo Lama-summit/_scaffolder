@@ -39,3 +39,6 @@ Una fase posterior puede añadir:
 - El hero muestra claramente producto, lugar, objeto o estado real.
 - Las imágenes no son genéricas si el usuario necesita inspeccionar algo concreto.
 - La dirección visual coincide con `BRAND.md`.
+- Las escenas CSS tienen semántica accesible: `role="img"` si comunican contenido, `aria-hidden="true"` si son decorativas.
+- Las fuentes declaradas están cargadas o se documenta explícitamente que se usa system UI.
+- El copy visible respeta el idioma del proyecto, incluyendo tildes y formato local.

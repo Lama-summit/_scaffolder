@@ -50,6 +50,7 @@ docs/
   visual-assets-pipeline.md
   ux-ui-resource-catalog.md
   testing.md
+  field-notes.md
 prompts/
   opencode-scaffolder-mvp.md
   opencode-visual-polish.md
@@ -85,6 +86,8 @@ El validador escribe un reporte persistente en `reports/scaffold-validation.json
 
 La calidad de copy, arquitectura profunda, marca, diseño visual y dominio específico se revisan con Codex después de la generación base.
 
+`docs/field-notes.md` recoge aprendizajes de pruebas reales para que no se pierdan entre proyectos generados y mejoras del scaffolder.
+
 ## Deuda Técnica
 
 - Añadir tests automatizados para scripts.
@@ -96,6 +99,7 @@ La calidad de copy, arquitectura profunda, marca, diseño visual y dominio espec
 - Diseñar una skill específica de dirección/optimización de recursos gráficos si `imagegen` + Browser no cubren suficiente.
 - `skills/visual-asset-director.md` ya existe como checklist operativo; pendiente convertirlo en skill global solo si demuestra utilidad en varios proyectos reales.
 - Evaluar instalación de la skill Transitions.dev si los proyectos empiezan a necesitar motion CSS de forma recurrente.
+- Convertir aprendizajes de `docs/field-notes.md` en validadores cuando se repitan en varios proyectos.
 
 ## Log
 
@@ -105,4 +109,5 @@ La calidad de copy, arquitectura profunda, marca, diseño visual y dominio espec
 - 2026-05-24: Añadido catálogo UX/UI y motion con criterios para Transitions.dev, Motion, Aceternity, Shadcn, charts, Three.js y QA visual.
 - 2026-05-24: Añadido `npm test` con runner sin dependencias para validar generación de los tres stacks MVP.
 - 2026-05-24: Añadida skill local `visual-asset-director` y prompt `opencode-visual-polish`; los proyectos frontend generados los reciben automáticamente.
+- 2026-05-24: Añadida retrospectiva de `cafeteria-visual-demo` en `docs/field-notes.md`.
 - 2026-05-24: Endurecidas `visual-asset-director` y `opencode-visual-polish` con requisitos anti-slop: señales de dominio, decisiones tipográficas, botones deliberados, copy concreto y restricciones negativas en `BRAND.md`.
